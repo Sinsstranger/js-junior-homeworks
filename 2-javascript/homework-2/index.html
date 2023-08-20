@@ -19,7 +19,7 @@
     const inputCollections = [];
     do {
       let userInput = prompt("Введите число для сохранения");
-      if (isNaN(userInput) || userInput === null) {
+      if (isNaN(userInput) || userInput === null || userInput === '') {
         break;
       }
       inputCollections.push(userInput);
