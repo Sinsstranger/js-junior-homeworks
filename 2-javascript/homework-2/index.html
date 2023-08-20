@@ -19,7 +19,7 @@
     const inputCollections = [];
     do {
       let userInput = prompt("Введите число для сохранения");
-      if (typeof (Number.parseInt(userInput)) !== "number") {
+      if (isNaN(userInput) || userInput === null) {
         break;
       }
       inputCollections.push(userInput);
@@ -57,24 +57,24 @@
       "java",
       "javascript",
     ];
-			// 1. Удалите повторяющиеся элементы массива.
-			// *2. Выведите в консоль, сколько раз повторялся каждый элемент массива (включая удаленные элементы массива).
+    // 1. Удалите повторяющиеся элементы массива.
+    // *2. Выведите в консоль, сколько раз повторялся каждый элемент массива (включая удаленные элементы массива).
 
-			// Решение:
-      const strArrUniqVal = arr => {
-        const uniq = [];
-        const repeatsCount = {};
-        for(let term of arr){
-          if(uniq.includes(term)){
-            repeatsCount[term] = repeatsCount[term] ? repeatsCount[term] + 1 : 1;
-            continue;
-          }
-          uniq.push(term);
-          repeatsCount[term] = 1;
+    // Решение:
+    const strArrUniqVal = arr => {
+      const uniq = [];
+      const repeatsCount = {};
+      for (let term of arr) {
+        if (uniq.includes(term)) {
+          repeatsCount[term] = repeatsCount[term] ? repeatsCount[term] + 1 : 1;
+          continue;
         }
-        return {uniq, repeatsCount};
-      };
-      console.log(strArrUniqVal(languages));
+        uniq.push(term);
+        repeatsCount[term] = 1;
+      }
+      return { uniq, repeatsCount };
+    };
+    console.log(strArrUniqVal(languages));
 
   </script>
 </head>
