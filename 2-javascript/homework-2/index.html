@@ -34,10 +34,10 @@
 
     // Решение:
     const minMax = arr => {
-      let [min, max] = [null, null];
-      for (let num of numbers) {
-        min = min === null || num < min ? num : min;
-        max = max === null || num > max ? num : max;
+      let [min, max] = [arr[0], arr[0]];
+      for (let num of arr) {
+        min = num < min ? num : min;
+        max = num > max ? num : max;
       }
       return [min, max];
     }
