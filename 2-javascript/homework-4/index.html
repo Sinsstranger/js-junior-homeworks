@@ -41,7 +41,7 @@
 				elem.insertAdjacentText("afterbegin", "Homework 4.1");
 				return elem;
 			};
-			document.querySelector(".task1").insertAdjacentElement("afterbegin", createLink());
+			document.querySelector("#task1-link").insertAdjacentElement("afterbegin", createLink());
 		</script>
 
 		<h1>Для задания 2</h1>
@@ -71,7 +71,7 @@
 			let $div = document.querySelector(".task2").firstElementChild;
 			let $ul = $div.nextElementSibling;
 			let $threeLi = $ul.children[2];
-			let $a = $threeLi.nextElementSibling;
+			let $a = $threeLi.nextElementSibling.firstChild;
 			let $Yellow = document.querySelector(".task2>ol").children[Array.from($ul.children).indexOf($threeLi) - 1];
 			console.log($div, $ul, $threeLi, $a, $Yellow);
 		</script>
