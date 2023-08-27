@@ -139,7 +139,40 @@
 				let daysCount = (startDate.getMonth() + 1) % 2 ? 31 : 30;
 				daysCount = isLeapYear && month === 2 ? 29 : month === 2 ? 28 : daysCount;
 				daysCount = month === 8 ? 31 : daysCount;
-				console.log(daysCount);
+				let firstDayNum = startDate.getDay();
+				let placehold = Array.from({ length: Math.abs(daysCount - firstDayNum - daysCount) }, () => null);
+
+				for (let i = startDate, dateNum = 1; i < daysCount, dateNum < daysCount + 1; i++, dateNum++) {
+					placehold.push(dateNum);
+				}
+				placehold.splice(0, 1);
+				for (let i = 1; i <= placehold.length % 7; i++) {
+					placehold.push(null);
+				}
+				let $rows = [];
+				for (let i = 0; i < placehold.length / 7; i++) {
+					$rows.push(document.createElement("tr"));
+				}
+				for (let i = 0, g = 0; i < placehold.length; i++) {
+					if (i % 7 === 0 && i !== 0) {
+						g += 1;
+					}
+					let $td = document.createElement("td");
+					$td.textContent = placehold[i] === null ? "" : placehold[i];
+					$rows[g].append($td);
+				}
+				let theadPoints = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+				let $table = document.createElement("table");
+				let $tableHeadRow = document.createElement("tr");
+				$table.append($tableHeadRow);
+				theadPoints.map((point) => {
+					let $th = document.createElement("th");
+					$th.textContent = point;
+					$tableHeadRow.append($th);
+					return $th;
+				});
+				$rows.map((tableRow) => $table.append(tableRow));
+				elementLink.insertAdjacentElement("afterbegin", $table);
 			};
 			newCalendar(document.querySelector(".task3"), year, month);
 		</script>
