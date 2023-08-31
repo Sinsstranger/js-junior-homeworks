@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<link rel="shortcut icon" href="#"/>
+	<title>Домашнее задание - занятие 5</title>
+</head>
+<body>
+<h1>Для задания 1</h1>
+<div class="task1">
+	<table id="table1">
+		<tr>
+			<th>Имя</th>
+			<th>Отдел</th>
+			<th>Возраст</th>
+		</tr>
+		<tr>
+			<td>Vika</td>
+			<td>Front-end</td>
+			<td>32</td>
+		</tr>
+		<tr>
+			<td>Ivan</td>
+			<td>Back-end</td>
+			<td>30</td>
+		</tr>
+		<tr>
+			<td>Anna</td>
+			<td>Front-end</td>
+			<td>25</td>
+		</tr>
+	</table>
+	<div>
+		<form id="form1">
+			<div>
+				<input value="" placeholder="Имя" id="form1-name">
+			</div>
+			<div>
+				<input value="" placeholder="Отдел" id="form1-department">
+			</div>
+			<div>
+				<input value="" placeholder="Возраст" id="form1-age">
+			</div>
+			<div>
+				<input type="button" value="Добавить новую строку" id="form1-btn">
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+	// 1. Написать функцию для сортировки таблицы #table1 по столбцу "Имя".
+	// В таблице может быть больше строк.
+	// Функцию сортировки необходимо вызывать при клике на столбце "Имя".
+	// Один клик на столбце, сортировка по алфавиту, второй клик, в обратном порядке.
+	// Также, можете добавить CSS стили на свое усмотрение.
+	// *2. Напишите функцию для добавления строк в таблицу из формы. Новые строки должны тоже учавствовать в сортировке.
+	// *3. Добавьте возможность удаления строк из таблицы. Это не должно как-то влиять на сортировку.
+	// Решение:
+
+
+	// Пример:
+	// let sort1 = [1, 20, -3, 4].sort((a, b) => {
+	//   if(a > b) {
+	//     return 1;
+	//   } else {
+	//     return -1;
+	//   }
+	// });
+	// console.log(sort1);
+
+	// let sort2 = ["Петр", "Иван", "Анна"].sort((a, b) => {
+	//   if(a > b) {
+	//     return -1;
+	//   } else {
+	//     return 1;
+	//   }
+	// });
+	// console.log(sort2);
+
+	// // Получение строк таблицы
+	// let rows = Array.from(document.getElementById("table1").rows).splice(1);
+	// console.log(rows);
+	let sortColumnIndex = null;
+	let toReverse = false;
+	const sortTable = (tableEl, columnCount, order = "ASC") => {
+		let rowsToSort = Array.from(tableEl.rows).splice(1);
+		return rowsToSort.sort((row1, row2) => {
+			return row1.querySelectorAll("td")[columnCount - 1].textContent > row2.querySelectorAll("td")[columnCount - 1].textContent && order === "ASC" ? 1 : -1;
+		});
+	};
+	const tableRewrite = (table, columnNumber, isReverse = false) => {
+		let tableHead = table.rows[0];
+		let sortedBody = sortTable(table, columnNumber, isReverse ? "DESC" : "ASC");
+		sortedBody.unshift(tableHead);
+		table.append(...sortedBody);
+	};
+	document.querySelector("#table1").addEventListener("click", (event) => {
+		if (event.target.tagName === "TH") {
+			let currentSortColumnIndex = Array.prototype.indexOf.call(event.target.parentElement.children, event.target);
+			toReverse = currentSortColumnIndex === sortColumnIndex;
+			sortColumnIndex = currentSortColumnIndex;
+			tableRewrite(event.currentTarget, currentSortColumnIndex + 1, toReverse);
+		}
+	});
+	document.querySelector("#form1").addEventListener("submit", (event) => {
+		event.preventDefault();
+		const data = new FormData(event.target);
+		let name = data.get("name");
+		let department = data.get("department");
+		let age = data.get("age");
+		let htm = `\
+										<tr>
+											<td>${name}</td>
+											<td>${department}</td>
+											<td>${age}</td>
+										</tr>\
+									`;
+		document.querySelector("#table1").insertAdjacentHTML("beforeend", htm);
+		tableRewrite(document.querySelector("#table1"), sortColumnIndex + 1, toReverse);
+	});
+	document.querySelector("#table1").addEventListener("dblclick", (event) => {
+		if (event.target.tagName === "TD") {
+			let rowIndex = Array.prototype.indexOf.call(event.currentTarget.querySelectorAll("tr"), event.target.parentElement);
+			event.currentTarget.querySelectorAll("tr")[rowIndex].remove();
+		}
+	});
+</script>
+
+<h1>Для задания 2</h1>
+<div class="task3" id="calendar">
+
+</div>
+<div id="task3-form">
+	<form id="form2">
+		<!-- Добавьте необходимые поля формы -->
+		<input type="number" name="year" placeholder="Год"/>
+		<input type="number" name="month" placeholder="Месяц"/>
+		<button type="submit">Рассчитать</button>
+	</form>
+</div>
+<style>
+    .task3 table {
+        border-collapse: collapse;
+    }
+
+    .task3 td,
+    .task3 th {
+        border: 1px solid black;
+        padding: 3px;
+        text-align: center;
+    }
+
+    .task3 th {
+        background-color: orange;
+        font-weight: bold;
+    }
+
+    .task3 td.red {
+        background-color: red;
+    }
+</style>
+<script>
+	// Создайте календарь в виде таблицы с помощью JavaScript
+	// Напишите функцию newCalendar(elementLink, year, month).
+
+	// Вызов функции newCalendar() создаст календарь для заданного месяца month в году year и вставить его внутрь elementLink.
+	// Календарь должен быть в виде таблицы (тег table), где неделя – это <tr>, а день – это <td>.
+	// У таблицы должен быть заголовок с названиями дней недели, каждый день – <th>.
+	// Первый день недели в календаре - понедельник.
+	// *Если выбран текущий месяц, подсветите красным текущий день на календаре.
+	// Пример вызова функции: newCalendar(elementLink, 2022, 1) сгенерирует календарь calendar.png
+
+	// Расширенное задание для занятия №5
+	// 1. *Создайте форму с помощью которой можно будет создавать календарь для любого месяца
+	// 2. *Добавьте кнопку для построения календаря за текущий месяц
+
+	// Подсказки
+	/*
+	let year = 2022, month = 1;
+	let date = new Date(year, month - 1); // Создание объекта Date для месяца month в году year (номерация начинается с 0)
+	let day = date.getDay(); // Получение номера дня недели
+	console.log(day);
+
+	date.setDate(date.getDate() + 1);
+	day = date.getDay(); // Получение номера дня в недели
+	console.log(day);
+
+	date.setDate(date.getDate() + 1);
+	day = date.getDay();
+	console.log(day);
+
+	// Решение:
+	*/
+	function getDay(date) {
+		let day = date.getDay();
+		if (day === 0) day = 7;
+		return day - 1;
+	}
+
+	const newCalendar = (elementLink, year, month) => {
+		const dateMonth = month - 1;
+		const date = new Date(year, dateMonth);
+
+		const today = new Date();
+		const isCurrentMonth = today.getFullYear() === year && today.getMonth() === dateMonth;
+
+		let table = "<table><tr><th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th></tr><tr>";
+
+		// Вначале
+		for (let i = 0; i < getDay(date); i++) {
+			table += "<td></td>";
+		}
+
+		// Дни
+		while (date.getMonth() === dateMonth) {
+			const isCurrentDay = isCurrentMonth && date.getDate() === today.getDate();
+			const tdClass = isCurrentDay ? "red" : "";
+
+			table += `<td class="${tdClass}">${date.getDate()}</td>`;
+
+			if (getDay(date) % 7 === 6) {
+				table += "</tr><tr>";
+			}
+
+			date.setDate(date.getDate() + 1);
+		}
+
+		//В конце
+		if (getDay(date) !== 0) {
+			for (let i = getDay(date); i < 7; i++) {
+				table += "<td></td>";
+			}
+		}
+
+		table += "</tr></table>";
+		elementLink.innerHTML = table;
+	};
+	document.querySelector("#form2").addEventListener("submit", (event) => {
+		event.preventDefault();
+		let formData = new FormData(event.target);
+		let year = formData.get("year");
+		let mounth = formData.get("month");
+		newCalendar(document.querySelector("#calendar"), year, mounth);
+	});
+</script>
+</body>
+</html>
