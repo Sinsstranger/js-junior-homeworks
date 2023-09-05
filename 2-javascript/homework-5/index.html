@@ -6,16 +6,32 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<link rel="shortcut icon" href="#"/>
 	<title>Домашнее задание - занятие 5</title>
+	<style>
+		#table1 th {
+			cursor: pointer;
+		}
+
+		.sort-asc::after {
+			content: " ▲";
+		}
+
+		.sort-desc::after {
+			content: " ▼";
+		}
+	</style>
 </head>
 <body>
 <h1>Для задания 1</h1>
 <div class="task1">
 	<table id="table1">
+		<thead>
 		<tr>
-			<th>Имя</th>
-			<th>Отдел</th>
-			<th>Возраст</th>
+			<th onclick="sortTable(0)">Имя<span class="sort-indicator"></span></th>
+			<th onclick="sortTable(1)">Отдел<span class="sort-indicator"></span></th>
+			<th onclick="sortTable(2)">Возраст<span class="sort-indicator"></span></th>
 		</tr>
+	</thead>
+	<tbody>
 		<tr>
 			<td>Vika</td>
 			<td>Front-end</td>
@@ -31,6 +47,7 @@
 			<td>Front-end</td>
 			<td>25</td>
 		</tr>
+	</tbody>
 	</table>
 	<div>
 		<form id="form1">
@@ -59,73 +76,43 @@
 	// *3. Добавьте возможность удаления строк из таблицы. Это не должно как-то влиять на сортировку.
 	// Решение:
 
+	const table = document.querySelector('#table1')
 
-	// Пример:
-	// let sort1 = [1, 20, -3, 4].sort((a, b) => {
-	//   if(a > b) {
-	//     return 1;
-	//   } else {
-	//     return -1;
-	//   }
-	// });
-	// console.log(sort1);
+	// Вариант 1
+	// const rows = Array.from(table.rows).splice(1).sort((a, b) => a.cells[1].textContent > b.cells[1].textContent ? 1 : -1)
 
-	// let sort2 = ["Петр", "Иван", "Анна"].sort((a, b) => {
-	//   if(a > b) {
-	//     return -1;
-	//   } else {
-	//     return 1;
-	//   }
-	// });
-	// console.log(sort2);
+	// table.tBodies[0].append(...rows)
 
-	// // Получение строк таблицы
-	// let rows = Array.from(document.getElementById("table1").rows).splice(1);
-	// console.log(rows);
-	let sortColumnIndex = null;
-	let toReverse = false;
-	const sortTable = (tableEl, columnCount, order = "ASC") => {
-		let rowsToSort = Array.from(tableEl.rows).splice(1);
-		return rowsToSort.sort((row1, row2) => {
-			return row1.querySelectorAll("td")[columnCount - 1].textContent > row2.querySelectorAll("td")[columnCount - 1].textContent && order === "ASC" ? 1 : -1;
-		});
-	};
-	const tableRewrite = (table, columnNumber, isReverse = false) => {
-		let tableHead = table.rows[0];
-		let sortedBody = sortTable(table, columnNumber, isReverse ? "DESC" : "ASC");
-		sortedBody.unshift(tableHead);
-		table.append(...sortedBody);
-	};
-	document.querySelector("#table1").addEventListener("click", (event) => {
-		if (event.target.tagName === "TH") {
-			let currentSortColumnIndex = Array.prototype.indexOf.call(event.target.parentElement.children, event.target);
-			toReverse = currentSortColumnIndex === sortColumnIndex;
-			sortColumnIndex = currentSortColumnIndex;
-			tableRewrite(event.currentTarget, currentSortColumnIndex + 1, toReverse);
+	// Вариант 2
+	let sortOrder = 1 // -1 - desc
+	let sortedColumn = -1
+
+	function sortTable(index){
+		if(index !== sortedColumn){
+			sortOrder = 1
+		} else {
+			sortOrder = -1
 		}
-	});
-	document.querySelector("#form1").addEventListener("submit", (event) => {
-		event.preventDefault();
-		const data = new FormData(event.target);
-		let name = data.get("name");
-		let department = data.get("department");
-		let age = data.get("age");
-		let htm = `\
-										<tr>
-											<td>${name}</td>
-											<td>${department}</td>
-											<td>${age}</td>
-										</tr>\
-									`;
-		document.querySelector("#table1").insertAdjacentHTML("beforeend", htm);
-		tableRewrite(document.querySelector("#table1"), sortColumnIndex + 1, toReverse);
-	});
-	document.querySelector("#table1").addEventListener("dblclick", (event) => {
-		if (event.target.tagName === "TD") {
-			let rowIndex = Array.prototype.indexOf.call(event.currentTarget.querySelectorAll("tr"), event.target.parentElement);
-			event.currentTarget.querySelectorAll("tr")[rowIndex].remove();
-		}
-	});
+		sortedColumn = index
+
+		// Иконки
+		const sortIndicators = document.querySelectorAll('.sort-indicator')
+		sortIndicators.forEach(item => item.innerHTML = '')
+
+		// Установим индикатор
+		const sortIndicator = table.tHead.rows[0].cells[index].querySelector('.sort-indicator')
+		sortIndicator.innerHTML = sortOrder === 1 ? ' ▲' : ' ▼'
+
+		const rows = Array.from(table.tBodies[0].rows).sort((a, b) => {
+			const cellA = a.cells[index].textContent.toLowerCase()
+			const cellB = b.cells[index].textContent.toLowerCase()
+
+			return sortOrder * cellA.localeCompare(cellB)
+		})
+
+	table.tBodies[0].append(...rows)
+	}
+
 </script>
 
 <h1>Для задания 2</h1>
@@ -176,21 +163,6 @@
 	// 1. *Создайте форму с помощью которой можно будет создавать календарь для любого месяца
 	// 2. *Добавьте кнопку для построения календаря за текущий месяц
 
-	// Подсказки
-	/*
-	let year = 2022, month = 1;
-	let date = new Date(year, month - 1); // Создание объекта Date для месяца month в году year (номерация начинается с 0)
-	let day = date.getDay(); // Получение номера дня недели
-	console.log(day);
-
-	date.setDate(date.getDate() + 1);
-	day = date.getDay(); // Получение номера дня в недели
-	console.log(day);
-
-	date.setDate(date.getDate() + 1);
-	day = date.getDay();
-	console.log(day);
-
 	// Решение:
 	*/
 	function getDay(date) {
@@ -204,8 +176,8 @@
 		const date = new Date(year, dateMonth);
 
 		const today = new Date();
-		const isCurrentMonth = today.getFullYear() === year && today.getMonth() === dateMonth;
-
+		const isCurrentMonth = today.getFullYear() === +year && today.getMonth() === +dateMonth;
+		console.log(isCurrentMonth)
 		let table = "<table><tr><th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th></tr><tr>";
 
 		// Вначале
