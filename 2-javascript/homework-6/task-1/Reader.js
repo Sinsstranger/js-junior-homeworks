@@ -5,6 +5,7 @@ class Reader {
 	readerTicketNumber = null;
 	dateOfBirth = null;
 	email = null;
+	books = [];
 
 	constructor(surname, name, patronymic, readerTicketNumber, dateOfBirth, email) {
 		this.surname = surname;
@@ -16,6 +17,7 @@ class Reader {
 	}
 
 	receiveBook(books) {
+		this.books = [...this.books, ...books];
 		let answer = `${this.surname} ${this.surname || ''} ${this.patronymic || ''} взял книги: `;
 		for (const book of books) {
 			answer += `"${book.bookTitle}", `;
@@ -26,6 +28,7 @@ class Reader {
 	returnBook(books) {
 		let answer = `${this.surname} ${this.surname || ''} ${this.patronymic || ''} вернул книги: `;
 		for (const book of books) {
+			this.books = this.books.filter(exBook => exBook !== book);
 			answer += `"${book.bookTitle}", `;
 		}
 		return answer.trim().slice(0, -1);
