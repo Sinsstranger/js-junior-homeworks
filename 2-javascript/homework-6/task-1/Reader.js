@@ -17,11 +17,15 @@ class Reader {
 	}
 
 	receiveBook(books) {
-		this.books = [...this.books, ...books];
+		let newBooks = [];
 		let answer = `${this.surname} ${this.surname || ''} ${this.patronymic || ''} взял книги: `;
 		for (const book of books) {
+			if (!this.books.includes(book)) {
+				newBooks.push(book);
+			}
 			answer += `"${book.bookTitle}", `;
 		}
+		this.books = [...this.books, ...newBooks];
 		return answer.trim().slice(0, -1);
 	}
 
