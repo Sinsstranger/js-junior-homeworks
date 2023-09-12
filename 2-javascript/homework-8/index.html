@@ -17,15 +17,15 @@
 		// Решение
 		const stopwatch = (start, end) => {
 			const tickMsTime = 1000;
-			let currentStep = start;
-			const ticker = () => {
+			const ticker = (currentStep) => {
 				console.log(currentStep);
-				currentStep++;
-				if (currentStep <= end) {
-					setTimeout(ticker, tickMsTime);
+				if (currentStep < end) {
+					setTimeout(() => {
+						ticker(currentStep+1)
+					}, tickMsTime);
 				}
 			}
-			setTimeout(ticker, tickMsTime);
+			ticker(start)
 
 		};
 		stopwatch(5, 9);
