@@ -1,99 +1,19 @@
-import NewsList from "./NewsList.js";
-
-export default class NotesApp {
-	notes = null;
-
-	constructor(AppRootElement, AddNoteModal, apiUrl) {
-		this.appElement = AppRootElement;
-		this.apiUrl = apiUrl;
-		this.notesDisplayContainer = this.appElement.querySelector(".notes__show");
-		this.addNoteModal = AddNoteModal;
-		this.init();
-	}
-
-	async getInitialNotes() {
-		try {
-			const res = await fetch(this.apiUrl);
-			if (res.ok) {
-				return res.json();
-			}
-		} catch (e) {
-			console.log(e);
+export default class NewsListItem {
+	constructor(rawData) {
+		for (let key in rawData) {
+			this[key] = rawData[key];
 		}
+		this.description = this.description ?? `Placeholder Text ${this.title}[${this.id}]`;
 	}
-
-	prepareListeners() {
-		const addNoteBtn = this.addNoteModal.querySelector("#add-note");
-		const addNoteCloseElems = this.addNoteModal.querySelectorAll("#add-note-close, btn-close");
-		const dispatchClick = new Event("click");
-		this.notes.listContainer.addEventListener("click", (event) => {
-			const editedId = event.target.closest(".note").dataset.noteId;
-			if (event.target.classList.contains("note__delete")) {
-				if (this.notesDisplayContainer.dataset.displayedNote === editedId) {
-					delete this.notesDisplayContainer.dataset.displayedNote;
-					this.notesDisplayContainer.value = null;
-				}
-				this.notes.removeItem(editedId);
-				event.target.closest(".note").remove();
-				return;
-			}
-			this.notes.showItem(this.notesDisplayContainer, editedId);
-		});
-		document.querySelector(".note__edit").addEventListener("click", (event) => {
-			const editContainer = event.target.closest(".notes").querySelector(".notes__show");
-			const editedId = editContainer.dataset.displayedNote || null;
-			if (editedId === null) {
-				return false;
-			}
-			const rawData = editContainer.value;
-			const data = this.prepareEditedData(rawData);
-			this.notes.editItem(editedId, data);
-		});
-		addNoteBtn.addEventListener("click", (e) => {
-			addNoteCloseElems[0].dispatchEvent(dispatchClick);
-			return this.addNote();
-		});
-		addNoteCloseElems.forEach((closeElem) => {
-			closeElem.addEventListener("click", (event) => {
-				const noteTitleInput = this.addNoteModal.querySelector("#note-title");
-				const noteDescriptionInput = this.addNoteModal.querySelector("#note-text");
-				noteTitleInput.value = null;
-				noteDescriptionInput.value = null;
-			});
-		});
-	}
-
-	async init() {
-		try {
-			const resNotes = await this.getInitialNotes();
-			this.notes = new NewsList(this.appElement.querySelector(".notes__list"));
-			this.notes.createItems(resNotes);
-			this.notes.listContainer.insertAdjacentHTML("afterbegin", this.notes.listItems.map((listItem) => listItem.render()).join(""));
-			this.prepareListeners();
-		} catch (e) {
-			console.log("Не удалось получить заметки");
-		}
-	}
-
-	prepareEditedData(rawData) {
-		const data = rawData.trim().split("\n");
-		return {title: data.splice(0, 1).join("\n"), description: data.join("\n")};
-	}
-
-	addNote() {
-		const noteTitleInput = this.addNoteModal.querySelector("#note-title");
-		const noteDescriptionInput = this.addNoteModal.querySelector("#note-text");
-		const noteId = this.notes.listItems.length + 1;
-		if (!noteId || !noteTitleInput || !noteDescriptionInput) {
-			return false;
-		}
-		this.notes.addOneItem({
-			id: noteId,
-			title: noteTitleInput.value,
-			description: noteDescriptionInput.value
-		});
-		noteTitleInput.value = null;
-		noteDescriptionInput.value = null;
-		return true;
+	render() {
+		return `<div class="notes__item note" data-note-id="${this.id}">
+    <header class="note__header mb-2">
+      <h5 class="h5 note__title">${this.title}</h5>
+      <div class="note__controls">
+        <button class="note__delete">Удалить</button>
+      </div>
+    </header>
+    <div class="note__intro">${this.description}</div>
+  </div>`;
 	}
 }
