@@ -1,12 +1,14 @@
 import NewsList from "./NewsList.js";
+
 export default class NotesApp {
 	notes = null;
+
 	constructor(AppRootElement, AddNoteModal, apiUrl) {
 		this.appElement = AppRootElement;
 		this.apiUrl = apiUrl;
 		this.notesDisplayContainer = this.appElement.querySelector(".notes__show");
 		this.addNoteModal = AddNoteModal;
-		this.init();
+		this.init().finally(()=> console.log("Приложение запущено!"));
 	}
 
 	async getInitialNotes() {
@@ -17,48 +19,58 @@ export default class NotesApp {
 			}
 		} catch (e) {
 			console.log(e);
+			throw e;
 		}
 	}
+
+	handleAddNote(event) {
+		const editedId = event.target.closest(".note").dataset.noteId;
+		if (event.target.classList.contains("note__delete")) {
+			if (this.notesDisplayContainer.dataset.displayedNote === editedId) {
+				delete this.notesDisplayContainer.dataset.displayedNote;
+				this.notesDisplayContainer.value = null;
+			}
+			this.notes.removeItem(editedId);
+			event.target.closest(".note").remove();
+			return;
+		}
+		this.notes.showItem(this.notesDisplayContainer, editedId);
+	}
+
+	handleNoteEdit(event) {
+		const editContainer = event.target.closest(".notes").querySelector(".notes__show");
+		const editedId = editContainer.dataset.displayedNote || null;
+		if (editedId === null) {
+			return false;
+		}
+		const rawData = editContainer.value;
+		const data = this.prepareEditedData(rawData);
+		this.notes.editItem(editedId, data);
+	}
+
+	handleCloseAddNoteModal(event) {
+		const noteTitleInput = this.addNoteModal.querySelector("#note-title");
+		const noteDescriptionInput = this.addNoteModal.querySelector("#note-text");
+		setTimeout(() => {
+			noteTitleInput.value = null;
+			noteDescriptionInput.value = null;
+		}, 500);
+	}
+
 	prepareListeners() {
 		const addNoteBtn = this.addNoteModal.querySelector("#add-note");
-		const addNoteCloseElems = this.addNoteModal.querySelectorAll("#add-note-close, btn-close");
+		const addNoteCloseElems = this.addNoteModal.querySelectorAll("#add-note-close, .btn-close");
 		const dispatchClick = new Event("click");
-		this.notes.listContainer.addEventListener("click", (event) => {
-			const editedId = event.target.closest(".note").dataset.noteId;
-			if (event.target.classList.contains("note__delete")) {
-				if (this.notesDisplayContainer.dataset.displayedNote === editedId) {
-					delete this.notesDisplayContainer.dataset.displayedNote;
-					this.notesDisplayContainer.value = null;
-				}
-				this.notes.removeItem(editedId);
-				event.target.closest(".note").remove();
-				return;
-			}
-			this.notes.showItem(this.notesDisplayContainer, editedId);
-		});
-		document.querySelector(".note__edit").addEventListener("click", (event) => {
-			const editContainer = event.target.closest(".notes").querySelector(".notes__show");
-			const editedId = editContainer.dataset.displayedNote || null;
-			if (editedId === null) {
-				return false;
-			}
-			const rawData = editContainer.value;
-			const data = this.prepareEditedData(rawData);
-			this.notes.editItem(editedId, data);
-		});
+		this.notes.listContainer.addEventListener("click", (event) => this.handleAddNote(event));
+		document.querySelector(".note__edit").addEventListener("click", (event) => this.handleNoteEdit(event));
 		addNoteBtn.addEventListener("click", (e) => {
-			addNoteCloseElems[0].dispatchEvent(dispatchClick);
+			if (addNoteCloseElems[0]) {
+				addNoteCloseElems[0].dispatchEvent(dispatchClick);
+			}
 			return this.addNote();
 		});
 		addNoteCloseElems.forEach((closeElem) => {
-			closeElem.addEventListener("click", (event) => {
-				setTimeout(() => {
-					const noteTitleInput = this.addNoteModal.querySelector("#note-title");
-					const noteDescriptionInput = this.addNoteModal.querySelector("#note-text");
-					noteTitleInput.value = null;
-					noteDescriptionInput.value = null;
-				}, 500);
-			});
+			closeElem.addEventListener("click", (event) => this.handleCloseAddNoteModal(event));
 		});
 	}
 
@@ -73,14 +85,15 @@ export default class NotesApp {
 			console.log("Не удалось получить заметки");
 		}
 	}
+
 	prepareEditedData(rawData) {
 		const data = rawData.trim().split("\n");
-		return { title: data.splice(0, 1).join("\n"), description: data.join("\n") };
+		return {title: data.splice(0, 1).join("\n"), description: data.join("\n")};
 	}
+
 	addNote() {
 		const noteTitleInput = this.addNoteModal.querySelector("#note-title");
 		const noteDescriptionInput = this.addNoteModal.querySelector("#note-text");
-		console.log(noteTitleInput.value, noteDescriptionInput.value);
 		const noteId = this.notes.listItems.length + 1;
 		if (!noteId || !noteTitleInput || !noteDescriptionInput) {
 			return false;

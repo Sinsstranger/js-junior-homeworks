@@ -1,9 +1,11 @@
 export default class NewsListItem {
+	id;
+	title;
 	constructor(rawData) {
 		for (let key in rawData) {
 			this[key] = rawData[key];
 		}
-		this.description = this.description ?? `Placeholder Text ${this.title}[${this.id}]`;
+		this.description = rawData.description || `Placeholder Text ${this.title}[${this.id}]`;
 	}
 	render() {
 		return `<div class="notes__item note" data-note-id="${this.id}">
