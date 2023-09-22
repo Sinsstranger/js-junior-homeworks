@@ -35,11 +35,7 @@ const calc = () => {
 	const operandOne = args._[0];
 	const operator = args._[1];
 	const operandTwo = args._[2];
-	if (
-		typeof operandOne === "undefined" ||
-		typeof operator === "undefined" ||
-		typeof operandTwo === "undefined"
-	) {
+	if (isNaN(operandOne) || isNaN(operandTwo)) {
 		return "Не корректный ввод аргументов";
 	}
 	switch (operator) {
