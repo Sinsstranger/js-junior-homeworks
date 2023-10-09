@@ -34,6 +34,10 @@ const stackSchema = new mongoose.Schema({
 			message: "Неверный формат ссылки",
 		},
 	},
+	isUsuallyUsed: {
+		type: Boolean,
+		required: false, // Не обязательное поле
+	}
 });
 
 // Создаем модель для стека технологий на основе схемы

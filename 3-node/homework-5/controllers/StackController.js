@@ -37,7 +37,7 @@ const StackController = {
 	create: async (req, res) => {
 		try {
 			// Получаем данные из тела запроса
-			const {title, imagePath, description, url} = req.body;
+			const {title, imagePath, description, url, isUsuallyUsed} = req.body;
 			// Проверяем, что все обязательные поля заполнены
 			if (!title || !imagePath) {
 				// Если нет, отправляем статус 400 и сообщение
@@ -49,6 +49,7 @@ const StackController = {
 				imagePath,
 				description,
 				url,
+				isUsuallyUsed,
 			});
 			// Сохраняем объект в базе данных
 			await stack.save();
@@ -66,7 +67,7 @@ const StackController = {
 			// Получаем ID из параметров запроса
 			const id = req.params.id;
 			// Получаем данные из тела запроса
-			const {title, imagePath, description, url} = req.body;
+			const {title, imagePath, description, url, isUsuallyUsed} = req.body;
 			// Проверяем, что хотя бы одно поле заполнено
 			if (!title && !imagePath && !description && !url) {
 				// Если нет, отправляем статус 400 и сообщение
@@ -86,6 +87,7 @@ const StackController = {
 			if (imagePath) stack.imagePath = imagePath;
 			if (description) stack.description = description;
 			if (url) stack.url = url;
+			if (url) stack.isUsuallyUsed = isUsuallyUsed;
 			// Сохраняем обновленный объект в базе данных
 			await stack.save();
 			// Отправляем ответ с объектом технологии

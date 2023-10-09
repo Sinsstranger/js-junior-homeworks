@@ -4,8 +4,13 @@ const mongoose = require('mongoose');
 const stackRoutes = require('./routes/stackRoutes');
 const projectRoutes = require('./routes/ProjectRoutes');
 const reviewsRoutes = require('./routes/ReviewsRoutes');
+const {join} = require("path");
 require('dotenv').config();
 
+app.set('view engine', 'ejs');
+app.set('view cache', false);
+app.set('views', join(__dirname, "./views"));
+app.use(express.static('views'))
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use('/api/stack', stackRoutes);
@@ -13,7 +18,7 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/reviews', reviewsRoutes);
 
 app.get('/', (req, res) => {
-	res.json({message: 'Hello From API! Use /api/:category to get something'});
+	res.render('pages/index');
 })
 const run = async () => {
 	try {
