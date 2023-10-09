@@ -66,33 +66,20 @@ const projectController = {
 	// Контроллер для обновления существующего проекта по ID
 	update: async (req, res) => {
 		try {
-			// Получаем ID из параметров запроса
 			const id = req.params.id;
-			// Получаем данные из тела запроса
-			const {title, imagePath, description, url, category, technologies, status} = req.body;
-			// Проверяем, что хотя бы одно поле заполнено
-			if (!title && !imagePath && !description && !url && !category && !technologies && !status) {
-				// Если нет, отправляем статус 400 и сообщение
-				return res
-					.status(400)
-					.send("Please provide at least one field to update");
+			const updateFields = req.body.filter(Boolean);
+			if (Object.keys(updateFields).length === 0) {
+				return res.status(400).send('Please provide at least one field to update');
 			}
-			const project = await ProjectModel.findById(id);
+			// TODO: Сделано под Метод PUT, подумать о модификации под PUT / PATCH
+			const project = await ProjectModel.findByIdAndUpdate(id, updateFields, {
+				new: true,
+			});
+
 			if (!project) {
-				// Если нет, отправляем статус 404 и сообщение
-				return res.status(404).send("Project not found");
+				return res.status(404).send('Project not found');
 			}
-			// Обновляем поля проекта, если они переданы в запросе
-			if (title) project.title = title;
-			if (imagePath) project.imagePath = imagePath;
-			if (description) project.description = description;
-			if (url) project.url = url;
-			if (category) project.category = category;
-			if (technologies) project.technologies = technologies;
-			if (status) project.status = status;
-			// Сохраняем обновленный объект в базе данных
-			await project.save();
-			// Отправляем ответ с объектом
+
 			res.json(project);
 		} catch (err) {
 			// Обрабатываем ошибку и отправляем статус 500
