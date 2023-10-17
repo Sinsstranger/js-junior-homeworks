@@ -7,3 +7,5 @@ router.use('/update-user/:id', checkToken, authenticateUser);
 router.use('/delete-user/:id', checkToken, authenticateUser, (req, res, next) => authorizeUser(['admin', 'moderator'])(req, res, next));
 router.put('/update-user/:id', checkToken, authenticateUser, UserController.updateUserInfo);
 router.delete('/delete-user/:id', UserController.deleteUser);
+
+module.exports = router;
