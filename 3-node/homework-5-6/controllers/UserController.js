@@ -7,7 +7,6 @@ const UserController = {
 	createUser: async (req, res) => {
 		try {
 			// Проверка наличия обязательных полей
-			console.log(req.body);
 			if (!req.body.login || !req.body.password || !req.body.email) {
 				return res.status(400).json({
 					message: 'Недостаточно данных для создания пользователя'
