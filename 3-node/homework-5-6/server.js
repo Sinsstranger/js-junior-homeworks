@@ -12,7 +12,7 @@ require('dotenv').config();
 app.use(express.json());
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
-app.use(require('express-session')({ secret: process.env.JWT_SIGN_KEY, resave: true, saveUninitialized: true }));
+app.use(require('express-session')({ secret:  'sd4535', resave: true, saveUninitialized: true }));
 app.use(passport.session({}));
 app.use(passport.initialize({}));
 
@@ -26,6 +26,15 @@ app.use('/api/stack', stackRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/reviews', reviewsRoutes);
 app.use('/api/auth', authRoutes);
+
+// app.post('/login',
+//   passport.authenticate('local', {
+//     successRedirect: '/',
+//     failureRedirect: '/login', 
+		
+//   })
+// );
+
 
 app.get('/', (req, res) => {
 	res.render('pages/index');

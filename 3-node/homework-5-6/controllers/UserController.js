@@ -1,5 +1,5 @@
-const UserModel = require('../models/userModel');
-const passport = require('passport');
+const UserModel = require('../models/UserModel');
+const passport = require("../config/passport/passport");
 const jwt = require('jsonwebtoken');
 
 const UserController = {
@@ -39,8 +39,18 @@ const UserController = {
 		}
 	},
 	// Аутентификация пользователя и генерация токена
-	loginUser: async (req, res) => {
+	loginUser: async (req, res, next) => {
+  //  return passport.authenticate('local', {
+  //   successRedirect: '/',
+  //   // failureRedirect: '/error',
+	// 	failureMessage: true
+  // }, (err,user) => {
+  //    console.log(err, user);
+  //    res.json(user);
+  //  })(req, res, next)
+
 		passport.authenticate('local', {session: false}, (err, user, info) => {
+      console.log('USER', user);
 			if (err || !user) {
 				return res.status(401).json({
 					message: info ? info.message : 'Неверный логин или пароль'
