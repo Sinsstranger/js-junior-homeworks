@@ -50,7 +50,6 @@ const UserController = {
   //  })(req, res, next)
 
 		passport.authenticate('local', {session: false}, (err, user, info) => {
-      console.log('USER', user);
 			if (err || !user) {
 				return res.status(401).json({
 					message: info ? info.message : 'Неверный логин или пароль'
